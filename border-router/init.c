@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <inttypes.h>
 #include <stdbool.h>
 #include <unistd.h>
 #include <string.h>
@@ -142,6 +143,23 @@ static void check_port_conf(uint16_t port_id, struct rte_eth_dev_info *dev_info,
 
     port_conf->rx_adv_conf.rss_conf.rss_hf &= dev_info->flow_type_rss_offloads;
 
+    /* Only request offloads the device supports. Physical NICs support all of
+     * them, so this is a no-op there; virtual ports such as net_af_packet do not
+     * support IPv4 checksum offload and rte_eth_dev_configure() would fail. The
+     * ipv4_cksum_*_offload flags below then select the software checksum path. */
+    uint64_t const rx_wanted = port_conf->rxmode.offloads;
+    uint64_t const tx_wanted = port_conf->txmode.offloads;
+    port_conf->rxmode.offloads &= dev_info->rx_offload_capa;
+    port_conf->txmode.offloads &= dev_info->tx_offload_capa;
+    if (rx_wanted != port_conf->rxmode.offloads) {
+        printf("Rx offloads 0x%" PRIx64 " not supported, port=%d\n",
+            rx_wanted & ~port_conf->rxmode.offloads, port_id);
+    }
+    if (tx_wanted != port_conf->txmode.offloads) {
+        printf("Tx offloads 0x%" PRIx64 " not supported, port=%d\n",
+            tx_wanted & ~port_conf->txmode.offloads, port_id);
+    }
+
     if (dev_info->max_rx_queues == 1) {
         port_conf->rxmode.mq_mode = RTE_ETH_MQ_RX_NONE;
     }
@@ -192,7 +210,7 @@ static void rx_queue_setup(uint32_t lcore_id, uint16_t port_id, uint16_t queue_i
         port_id, strerror(-ret));
 
     struct rte_eth_rxconf rxq_conf = dev_info.default_rxconf;
-    rxq_conf.offloads = default_port_conf()->rxmode.offloads;
+    rxq_conf.offloads = default_port_conf()->rxmode.offloads & dev_info.rx_offload_capa;
     ret = rte_eth_rx_queue_setup(port_id, queue_id, adjusted_n_rxd(port_id), 
         socket_id, &rxq_conf, pktmbuf_pool[socket_id]);
     ASSERT_NOT_NEG(ret, "rte_eth_rx_queue_setup: err=%d, port=%d\n", ret, port_id);
