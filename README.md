@@ -49,6 +49,8 @@ apt install build-essential pkg-config python3-pyelftools meson ninja-build net-
 
 编译选项见 `border-router/meson_options.txt`。默认 `perf_test=true`，此时直接使用网卡真实 MAC，不读取 `arp-address`。
 
+`idle_sleep_us`（默认 0）：收包循环连续空转若干轮后睡这么多微秒，命令行线程空闲时也睡 1 ms。真机保持 0（忙轮询，与原来一样）；容器实验环境（color-lab）设成 50，让空闲的 BR 不占满 CPU，代价是空闲后第一个包多几十微秒时延。
+
 ## 运行
 
 所有操作都需要 root 权限，并且必须**在配置文件所在目录下执行**：程序按相对路径读取 `./config-br`、`./br.sqlite`。

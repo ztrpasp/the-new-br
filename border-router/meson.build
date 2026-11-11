@@ -10,6 +10,7 @@ openssl_dep = dependency('openssl', version : '1.1.1m', method : 'pkg-config')
 m_dep = cc.find_library('m', required : true)
 
 add_project_arguments('-DALLOW_EXPERIMENTAL_API', language : 'c')
+add_project_arguments('-DBR_IDLE_SLEEP_US=' + get_option('idle_sleep_us').to_string(), language : 'c')
 
 if get_option('perf_test')
   add_project_arguments('-DPERFORMANCE_TEST', language : 'c')

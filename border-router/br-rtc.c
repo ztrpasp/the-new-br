@@ -8,10 +8,21 @@
 #include <rte_lcore.h>
 #include <rte_timer.h>
 #include <rte_mbuf.h>
+#include <rte_cycles.h>
 #include "common.h"
 #include "br_conf.h"
 #include "br_tables.h"
 #include "br.h"
+
+/* Idle sleep (meson option idle_sleep_us, default 0 = pure busy polling as on
+ * the physical deployment). When > 0, the lcore sleeps that many microseconds
+ * after BR_IDLE_SPIN_ROUNDS consecutive empty polls, so idle BRs in the
+ * container lab do not keep a whole CPU at 100%. Costs tens of microseconds of
+ * latency on the first packet after an idle period. */
+#ifndef BR_IDLE_SLEEP_US
+#define BR_IDLE_SLEEP_US 0
+#endif
+#define BR_IDLE_SPIN_ROUNDS 64
 
 extern struct br_conf g_br_conf;
 extern struct br_tables g_br_tables;
@@ -50,7 +61,13 @@ int br_main_loop(__attribute__((unused)) void *dummy)
     
 
     struct rte_mbuf *pkts[MAX_PKT_BURST];
+#if BR_IDLE_SLEEP_US > 0
+    uint32_t idle_rounds = 0;
+#endif
     while (!br_conf->force_quit) {
+#if BR_IDLE_SLEEP_US > 0
+        bool got_packets = false;
+#endif
         cur_tsc = rte_rdtsc();
         /* TX burst queue drain */
         uint64_t diff_tsc = cur_tsc - prev_tsc;
@@ -86,11 +103,22 @@ int br_main_loop(__attribute__((unused)) void *dummy)
             if (n_rx == 0) {
                 continue;
             }
+#if BR_IDLE_SLEEP_US > 0
+            got_packets = true;
+#endif
             //printf("[lcf] RX is not empty\n");
             br_tables_rcu_online(br_tables, lcore_id);
             process_packets(n_rx, pkts, br_conf, br_tables);
             br_tables_rcu_offline(br_tables, lcore_id);
         }
+
+#if BR_IDLE_SLEEP_US > 0
+        if (got_packets) {
+            idle_rounds = 0;
+        } else if (++idle_rounds >= BR_IDLE_SPIN_ROUNDS) {
+            rte_delay_us_sleep(BR_IDLE_SLEEP_US);
+        }
+#endif
     }
 
     br_tables_rcu_unregister(br_tables, lcore_id);

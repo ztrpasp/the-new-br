@@ -328,6 +328,10 @@ static void execute(const char *cmd, struct br_conf const *br_conf)
     }
 }
 
+#ifndef BR_IDLE_SLEEP_US
+#define BR_IDLE_SLEEP_US 0
+#endif
+
 int cli_main_loop(__attribute__((unused)) void *dummy)
 {
     usleep(100 * 1000);
@@ -387,6 +391,13 @@ int cli_main_loop(__attribute__((unused)) void *dummy)
 
         nread = readfd(buff, 64);
         if (nread <= 0) {
+#if BR_IDLE_SLEEP_US > 0
+            /* Same switch as the packet loop (meson option idle_sleep_us): the
+             * CLI polls stdin non-blocking, so without this it keeps a whole CPU
+             * busy. 1 ms is far below what a person typing notices and finer
+             * than the ~10 ms timer resolution handled above. */
+            rte_delay_us_sleep(1000);
+#endif
             continue;
         }
         br_tables_rcu_online(br_tables, lcore_id);
