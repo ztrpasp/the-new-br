@@ -1,0 +1,39 @@
+#
+sysname BR131
+#
+br-nid 00-00-00-00-00-00-00-13-22-22-22-22-22-22-22-22
+#
+debugging on
+debugging l2 on
+debugging l3 on
+#
+odc enable
+idhv disable
+#
+arp enable
+#
+rm ip address 10.134.3.1
+#
+sk 12340013
+#
+port 0 ip address 192.168.100.32/24
+port 1 ip address 10.134.3.2/24
+port 2 ip address 192.168.100.31/24
+port 3 ip address 192.168.100.34/24
+#
+#as 15 px 1122
+#as 3 px 3344
+#as 2 px 5566
+#
+# peer add internal 10.0.0.3 sk 0
+# peer add-path 10.0.0.3 as 3 px 33440000/16
+# peer add external 192.168.2.2 sk 0
+# peer add-path 192.168.2.2 as 2 px 55660000/16
+# peer add external 192.168.0.1 sk 0
+# peer add-path 192.168.0.1 as 15 px 11220000/16
+peer add external 192.168.100.13 sk 0
+peer add-path 192.168.100.13 as 11 px 000d0000/16
+peer add external 192.168.100.23 sk 0
+peer add-path 192.168.100.23 as 12 px 00170000/16
+peer add external 192.168.100.43 sk 0
+peer add-path 192.168.100.43 as 14 px 00220000/16

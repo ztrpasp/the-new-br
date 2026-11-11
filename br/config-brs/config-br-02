@@ -1,0 +1,46 @@
+#
+sysname BR02
+#
+br-nid 00-00-00-00-00-00-00-00-33-33-33-33-33-33-33-33
+#
+debugging on
+debugging l2 on
+debugging l3 on
+#
+odc enable
+idhv disable
+#
+arp enable
+#
+rm ip address 10.50.51.0
+#
+sk 12340000
+#
+port 0 ip address 10.50.51.4/31
+port 1 ip address 192.168.101.1/24
+#
+#as 15 px 1122
+#as 3 px 3344
+#as 2 px 5566
+#
+# peer add internal 10.0.0.3 sk 0
+# peer add-path 10.0.0.3 as 3 px 33440000/16
+# peer add external 192.168.2.2 sk 0
+# peer add-path 192.168.2.2 as 2 px 55660000/16
+# peer add external 192.168.0.1 sk 0
+# peer add-path 192.168.0.1 as 15 px 11220000/16
+peer add internal 10.50.51.2 sk 0
+peer add-path 10.50.51.2 as 15 px ff050000/16
+peer add internal 10.50.51.6 sk 0
+peer add-path 10.50.51.6 as 11 px ff010000/16
+peer add internal 10.50.51.8 sk 0
+peer add-path 10.50.51.8 as 4 px 00040000/16
+peer add internal 10.50.51.10 sk 0
+peer add-path 10.50.51.10 as 5 px 00050000/16
+peer add external 192.168.101.2 sk 0
+peer add-path 192.168.101.2 as 1 px 00010000/16
+ip-route 10.50.51.2/31 10.50.51.5
+ip-route 10.50.51.6/31 10.50.51.5
+ip-route 10.50.51.8/31 10.50.51.5
+ip-route 10.50.51.10/31 10.50.51.5
+ip-route 10.50.51.0/31 10.50.51.5

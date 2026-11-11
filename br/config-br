@@ -1,0 +1,26 @@
+#
+sysname BR2
+#
+br-nid 00-00-00-00-00-00-00-22-22-22-22-22-22-22-22-22
+#
+debugging on
+#
+odc enable
+idhv enable
+#
+arp enable
+#
+rm ip address 172.10.0.5
+#
+sk 12340002
+#
+port 0 ip address 172.10.0.1/24
+port 1 ip address 110.0.0.3/24
+#
+peer add external 110.0.0.2 sk 0000000000000000000000000000000000000000000000000000000012340001
+peer add-path 110.0.0.2 as 1 px 10000000/16
+peer add external 172.20.0.1 sk 0000000000000000000000000000000000000000000000000000000012340002
+peer add-path 172.20.0.1 as 1 px 24000000/16
+#
+ip-route 172.20.0.1/24 172.10.0.254
+

@@ -1,0 +1,36 @@
+#
+sysname BR41
+#
+br-nid 00-00-00-00-00-00-00-04-22-22-22-22-22-22-22-22
+#
+debugging on
+debugging l2 on
+debugging l3 on
+#
+odc enable
+idhv disable
+#
+arp enable
+#
+rm ip address 10.0.1.1
+#
+sk 12340004
+#
+port 3 ip address 10.0.1.2/24
+port 2 ip address 192.168.100.141/24
+port 1 ip address 192.168.104.2/24
+#
+#as 15 px 1122
+#as 3 px 3344
+#as 2 px 5566
+#
+# peer add internal 10.0.0.3 sk 0
+# peer add-path 10.0.0.3 as 3 px 33440000/16
+# peer add external 192.168.2.2 sk 0
+# peer add-path 192.168.2.2 as 2 px 55660000/16
+# peer add external 192.168.0.1 sk 0
+# peer add-path 192.168.0.1 as 15 px 11220000/16
+peer add external 192.168.100.114 sk 0
+peer add-path 192.168.100.114 as 11 px ff0e0000/16
+peer add external 192.168.104.1 sk 0
+peer add-path 192.168.104.1 as 0 px 00040000/16
