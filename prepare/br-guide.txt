@@ -1,0 +1,20 @@
+############
+#
+# by lcf2001523@163.com
+#
+############
+
+How to use new br? It's quite easy
+
+Remember to use root user throught the process, Enter "su" command and then enter the password "zeusnet123".
+
+After booting up, enter the /home/color directionary and execute ./set-br.sh, this file is used to configure the huge-page memory required by dpdk and bind the nics(ETH1 to ETH3, which are mapped to dpdk ports 0 to 2) to the dpdk-vfio driver(***CANNOT USE UIO!!!***). Note that this script only needs to be executed once each time the computer is booted, and also needs to be re-executed after each reboot.
+
+Then execute ./run-br.sh, the br is started, when you need to stop br, just press Ctrl+C. If you need to start br again, just execute ./run-br.sh again.
+
+If you modify the source code of br, which is in /home/color/border-router directory, remember to recompile it, just use /home/color/re_build_br.sh
+
+The configuration files of br are:
+/home/color/config-br
+/home/color/arp-address
+/home/color/br.sqlite (This is an empty file, you don't need to care about it)

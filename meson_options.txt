@@ -1,0 +1,11 @@
+option('perf_test', type : 'boolean', value : true, description : 'Performance test')
+option('no_rate_recording', type : 'boolean', value : false, description : 'No rate recording')
+option('profiler_enable', type : 'boolean', value : false, description : 'Profiler enable')
+option('no_pid_calculation', type : 'boolean', value : false, description : 'No PID calculation')
+option('no_get_cksum', type : 'boolean', value : false, description : 'Don\'t compute checksum for GET packets')
+option('no_hmac_computation', type : 'boolean', value : false, description : 'Don\'t re-compute HMAC for DATA packets')
+option('no_hmac_verification', type : 'boolean', value : false, description : 'Don\'t verify HMAC for DATA packets')
+option('nidt_test', type : 'boolean', value : false, description : 'Pipeline0 NID table test')
+option('odct_test', type : 'boolean', value : false, description : 'Pipeline0 ODC table test')
+option('prefetch', type : 'combo', choices : ['none', 'one', 'two', 'three'], value : 'three', description : 'Cache line prefetch per packet')
+
